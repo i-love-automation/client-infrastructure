@@ -33,3 +33,7 @@ variable "service" {
   description = "The name of the service that will be run on the environment"
   default     = "client"
 }
+
+output "client_s3_bucket_name" {
+  value = aws_s3_bucket.client.bucket
+}
