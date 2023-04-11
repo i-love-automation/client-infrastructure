@@ -36,4 +36,5 @@ variable "content_security_policy_client" {
   type        = string
   nullable    = false
   description = "The name of the service that will be run on the environment"
+  default     = "default-src 'self' data: https://cognito-idp.us-east-1.amazonaws.com ; font-src 'self'; img-src 'self'; object-src 'none'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; trusted-types angular angular#bundler dompurify; require-trusted-types-for 'script';"
 }
