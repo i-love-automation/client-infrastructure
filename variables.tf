@@ -16,6 +16,7 @@ variable "domain_names" {
   type        = string
   nullable    = true
   description = "The project registered domain name that cloudfront can use as aliases, for now only one domain is supported"
+  default     = false
 }
 variable "api_endpoint" {
   type        = string
