@@ -18,16 +18,19 @@ variable "domain_names" {
   description = "The project registered domain name that cloudfront can use as aliases, for now only one domain is supported"
   default     = false
 }
+
 variable "api_endpoint" {
   type        = string
-  nullable    = false
+  nullable    = true
   description = "The project api endpoint origin that get forwarded to an api gateway, for now only one endpoint is supported"
+  default     = "https://fakeapi.com"
 }
 
 variable "acm_certificate_arn" {
   type        = string
-  nullable    = false
-  description = "The project certificate ARN for https"
+  nullable    = true
+  description = "The project certificate ARN for your domain. Leave empty to use the cloudfront certificate (need to use the cloudfront domain too)"
+  default     = false
 }
 
 variable "content_security_policy_client" {
