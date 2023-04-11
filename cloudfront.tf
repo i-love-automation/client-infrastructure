@@ -13,7 +13,7 @@ resource "aws_cloudfront_distribution" "distribution" {
   default_root_object = "index.html"
   price_class         = "PriceClass_100"
 
-  aliases = var.domainNames ? var.domainNames : []
+  aliases = var.domain_names ? [var.domain_names] : []
 
   custom_error_response {
     error_caching_min_ttl = 7200
@@ -137,6 +137,7 @@ function handler(event) {
 EOF
 }
 
+
 resource "aws_cloudfront_response_headers_policy" "response_headers_policy_client" {
   name = "policy-client"
 
@@ -172,7 +173,7 @@ resource "aws_cloudfront_response_headers_policy" "response_headers_policy_clien
       override                   = true
     }
     content_security_policy {
-      content_security_policy = var.contentSecurityPolicyClient
+      content_security_policy = var.content_security_policy_client
       override                = true
     }
   }
