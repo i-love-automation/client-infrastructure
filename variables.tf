@@ -18,6 +18,14 @@ variable "domain_names" {
   default     = false
 }
 
+variable "hosting_zone_name" {
+  default = ""
+}
+
+variable "hosting_zone_id" {
+  default = ""
+}
+
 variable "api_endpoint" {
   type        = string
   nullable    = true
