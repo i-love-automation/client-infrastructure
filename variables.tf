@@ -27,7 +27,7 @@ variable "domain_names" {
   type        = string
   nullable    = true
   description = "The project registered domain name that cloudfront can use as aliases, for now only one domain is supported"
-  default     = false
+  default     = ""
 }
 
 variable "hosting_zone_name" {
@@ -54,7 +54,7 @@ variable "acm_certificate_arn" {
   type        = string
   nullable    = true
   description = "The project certificate ARN for your domain. Leave empty to use the cloudfront certificate (need to use the cloudfront domain too)"
-  default     = false
+  default     = ""
 }
 
 variable "content_security_policy_client" {
