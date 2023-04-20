@@ -31,18 +31,23 @@ variable "domain_names" {
 }
 
 variable "hosting_zone_name" {
-  default = ""
+  type        = string
+  nullable    = true
+  description = "The name of the route53 hosting zone"
+  default     = false
 }
 
 variable "hosting_zone_id" {
-  default = ""
+  type        = string
+  nullable    = true
+  description = "The id of the route53 hosting zone"
+  default     = false
 }
 
 variable "api_endpoint" {
   type        = string
-  nullable    = true
+  nullable    = false
   description = "The project api endpoint origin that get forwarded to an api gateway, for now only one endpoint is supported"
-  default     = "https://fakeapi.com"
 }
 
 variable "acm_certificate_arn" {
