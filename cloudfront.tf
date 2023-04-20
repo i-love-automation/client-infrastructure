@@ -13,7 +13,7 @@ resource "aws_cloudfront_distribution" "distribution" {
   default_root_object = "index.html"
   price_class         = "PriceClass_100"
 
-  aliases = var.domain_names ? [var.domain_names] : []
+  aliases = length(var.domain_names) > 0 ? [var.domain_names] : []
 
   custom_error_response {
     error_caching_min_ttl = 7200
@@ -90,8 +90,8 @@ resource "aws_cloudfront_distribution" "distribution" {
   }
 
   viewer_certificate {
-    acm_certificate_arn            = var.acm_certificate_arn ? var.acm_certificate_arn : null
-    cloudfront_default_certificate = var.acm_certificate_arn ? null : true
+    acm_certificate_arn            = length(var.acm_certificate_arn) > 0 ? var.acm_certificate_arn : null
+    cloudfront_default_certificate = length(var.acm_certificate_arn) > 0 ? null : true
     ssl_support_method             = "sni-only"
     minimum_protocol_version       = "TLSv1.2_2021"
   }
