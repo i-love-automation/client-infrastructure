@@ -23,7 +23,7 @@ variable "service" {
   description = "The name of the service that will be run on the environment"
 }
 
-variable "domain_names" {
+variable "domain_name" {
   type        = string
   nullable    = true
   description = "The project registered domain name that cloudfront can use as aliases, for now only one domain is supported"
