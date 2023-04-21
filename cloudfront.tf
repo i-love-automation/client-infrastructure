@@ -13,7 +13,7 @@ resource "aws_cloudfront_distribution" "distribution" {
   default_root_object = "index.html"
   price_class         = "PriceClass_100"
 
-  aliases = length(var.domain_names) > 0 ? [var.domain_names] : []
+  aliases = length(var.domain_name) > 0 ? [var.domain_name] : []
 
   custom_error_response {
     error_caching_min_ttl = 7200
