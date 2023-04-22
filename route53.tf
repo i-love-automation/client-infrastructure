@@ -1,5 +1,9 @@
+locals {
+  hasValidHostedZone = length(var.hosting_zone_name) > 0 && length(var.hosting_zone_id) > 0
+}
+
 resource "aws_route53_record" "record_ipv4" {
-  count = (var.hosting_zone_name && var.hosting_zone_id) ? 1 : 0
+  count = local.hasValidHostedZone ? 1 : 0
 
   name    = var.hosting_zone_name //aws_route53_zone.hosting_zone.name
   zone_id = var.hosting_zone_id   //aws_route53_zone.hosting_zone.zone_id
@@ -13,7 +17,7 @@ resource "aws_route53_record" "record_ipv4" {
 }
 
 resource "aws_route53_record" "record_ipv6" {
-  count = (var.hosting_zone_name && var.hosting_zone_id) ? 1 : 0
+  count = local.hasValidHostedZone ? 1 : 0
 
   name    = var.hosting_zone_name //aws_route53_zone.hosting_zone.name
   zone_id = var.hosting_zone_id   //aws_route53_zone.hosting_zone.zone_id
