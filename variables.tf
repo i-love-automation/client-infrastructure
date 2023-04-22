@@ -34,14 +34,14 @@ variable "hosting_zone_name" {
   type        = string
   nullable    = true
   description = "The name of the route53 hosting zone"
-  default     = false
+  default     = ""
 }
 
 variable "hosting_zone_id" {
   type        = string
   nullable    = true
   description = "The id of the route53 hosting zone"
-  default     = false
+  default     = ""
 }
 
 variable "api_endpoint" {
@@ -57,6 +57,7 @@ variable "acm_certificate_arn" {
   default     = ""
 }
 
+# TODO This is ugly an should be reworked
 variable "content_security_policy_client" {
   type        = string
   nullable    = false
