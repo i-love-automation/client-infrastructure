@@ -31,18 +31,21 @@ resource "aws_cloudfront_distribution" "distribution" {
     }
   }
 
-  origin {
-    domain_name = replace(var.api_endpoint, "/^https?://([^/]*).*/", "$1")
-    origin_id   = local.api_origin_id
+  dynamic "origin" {
+    for_each = var.api_endpoint != "" ? [1] : []
+    content {
+      domain_name = replace(var.api_endpoint, "/^https?://([^/]*).*/", "$1")
+      origin_id   = local.api_origin_id
 
-    custom_origin_config {
-      http_port              = 80
-      https_port             = 443
-      origin_protocol_policy = "https-only"
-      origin_ssl_protocols   = ["TLSv1.2"]
+      custom_origin_config {
+        http_port              = 80
+        https_port             = 443
+        origin_protocol_policy = "https-only"
+        origin_ssl_protocols   = ["TLSv1.2"]
+      }
     }
-
   }
+
 
   default_cache_behavior {
     allowed_methods        = ["GET", "HEAD"]
@@ -63,22 +66,25 @@ resource "aws_cloudfront_distribution" "distribution" {
 
   }
 
-  ordered_cache_behavior {
-    # Using the CachingDisabled managed policy ID: https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/using-managed-cache-policies.html#managed-cache-policy-caching-disabled
-    # Using the AllViewerExceptHostHeader managed origin request policies ID: https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/using-managed-origin-request-policies.html
-    path_pattern               = "/api/*"
-    allowed_methods            = ["HEAD", "DELETE", "POST", "GET", "OPTIONS", "PUT", "PATCH"]
-    cached_methods             = ["HEAD", "GET"]
-    target_origin_id           = local.api_origin_id
-    compress                   = true
-    viewer_protocol_policy     = "redirect-to-https"
-    cache_policy_id            = "4135ea2d-6df8-44a3-9df3-4b5a84be39ad"
-    origin_request_policy_id   = "b689b0a8-53d0-40ab-baf2-68738e2966ac"
-    response_headers_policy_id = aws_cloudfront_response_headers_policy.response_headers_policy_api.id
+  dynamic "ordered_cache_behavior" {
+    for_each = var.api_endpoint != "" ? [1] : []
+    content {
+      # Using the CachingDisabled managed policy ID: https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/using-managed-cache-policies.html#managed-cache-policy-caching-disabled
+      # Using the AllViewerExceptHostHeader managed origin request policies ID: https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/using-managed-origin-request-policies.html
+      path_pattern               = "/api/*"
+      allowed_methods            = ["HEAD", "DELETE", "POST", "GET", "OPTIONS", "PUT", "PATCH"]
+      cached_methods             = ["HEAD", "GET"]
+      target_origin_id           = local.api_origin_id
+      compress                   = true
+      viewer_protocol_policy     = "redirect-to-https"
+      cache_policy_id            = "4135ea2d-6df8-44a3-9df3-4b5a84be39ad"
+      origin_request_policy_id   = "b689b0a8-53d0-40ab-baf2-68738e2966ac"
+      response_headers_policy_id = aws_cloudfront_response_headers_policy.response_headers_policy_api.id
 
-    function_association {
-      event_type   = "viewer-request"
-      function_arn = aws_cloudfront_function.remove_api_from_uri.arn
+      function_association {
+        event_type   = "viewer-request"
+        function_arn = aws_cloudfront_function.remove_api_from_uri[0].arn
+      }
     }
   }
 
@@ -89,11 +95,22 @@ resource "aws_cloudfront_distribution" "distribution" {
     }
   }
 
-  viewer_certificate {
-    acm_certificate_arn            = length(var.acm_certificate_arn) > 0 ? var.acm_certificate_arn : null
-    cloudfront_default_certificate = length(var.acm_certificate_arn) > 0 ? null : true
-    ssl_support_method             = "sni-only"
-    minimum_protocol_version       = "TLSv1.2_2021"
+  dynamic "viewer_certificate" {
+    for_each = var.acm_certificate_arn != "" ? [1] : []
+    content {
+      viewer_certificate       = var.acm_certificate_arn
+      ssl_support_method       = "sni-only"
+      minimum_protocol_version = "TLSv1.2_2021"
+    }
+  }
+
+  dynamic "viewer_certificate" {
+    for_each = var.acm_certificate_arn == "" ? [1] : []
+    content {
+      cloudfront_default_certificate = true
+      ssl_support_method             = "sni-only"
+      minimum_protocol_version       = "TLSv1.2_2021"
+    }
   }
 
   tags = local.tags
@@ -127,6 +144,8 @@ resource "aws_s3_bucket_policy" "client" {
 }
 
 resource "aws_cloudfront_function" "remove_api_from_uri" {
+  count = var.api_endpoint != "" ? 1 : 0
+
   name    = "rewrite-request-remove-api-from-uri"
   runtime = "cloudfront-js-1.0"
   code    = <<EOF
