@@ -1,47 +1,23 @@
 resource "aws_s3_bucket" "client" {
-  bucket        = "${var.project}-${var.service}"
-  force_destroy = true
-  tags          = local.tags
+  bucket = "${var.project}-${var.service}"
+  tags   = local.tags
 }
 
-resource "aws_s3_bucket_acl" "bucket_acl" {
-  bucket = aws_s3_bucket.client.id
-  acl    = "private"
-}
-
-resource "aws_s3_bucket_website_configuration" "client_website" {
-  bucket = aws_s3_bucket.client.bucket
-
-  index_document {
-    suffix = "index.html"
-  }
-
-  error_document {
-    key = "index.html"
-  }
-}
-
-resource "aws_s3_bucket_policy" "allow_client_website_access_from_internet" {
-  bucket = aws_s3_bucket.client.id
-  policy = data.aws_iam_policy_document.allow_client_website_access_from_internet.json
-}
-
-data "aws_iam_policy_document" "allow_client_website_access_from_internet" {
+data "aws_iam_policy_document" "s3_bucket_policy" {
   statement {
-    sid    = "PublicReadGetObject"
-    effect = "Allow"
-
-    actions = [
-      "s3:GetObject",
-    ]
+    sid       = "GrantCloudFrontReadAccess"
+    effect    = "Allow"
+    actions   = ["s3:GetObject"]
+    resources = ["${aws_s3_bucket.client.arn}/*"]
 
     principals {
-      type        = "*"
-      identifiers = ["*"]
+      type        = "AWS"
+      identifiers = [aws_cloudfront_origin_access_identity.client.iam_arn]
     }
-
-    resources = [
-      "${aws_s3_bucket.client.arn}/*",
-    ]
   }
+}
+
+resource "aws_s3_bucket_policy" "bucket_policy" {
+  bucket = aws_s3_bucket.client.id
+  policy = data.aws_iam_policy_document.s3_bucket_policy.json
 }
