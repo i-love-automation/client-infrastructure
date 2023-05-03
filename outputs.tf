@@ -1,15 +1,15 @@
 locals {
   export_as_organization_variable = {
-    "s3_deployer_s3_bucket" = {
+    "cloudfront_s3_bucket" = {
       hcl       = false
       sensitive = false
       value     = aws_s3_bucket.client.bucket
     }
-    "s3_deployer_cloudfront_distribution_id" = {
-      hcl       = false
-      sensitive = false
-      value     = aws_cloudfront_distribution.distribution.id
-    }
+    #"cloudfront_distribution_id" = {
+    #  hcl       = false
+    #  sensitive = false
+    #  value     = aws_cloudfront_distribution.distribution.id
+    #}
   }
 }
 
