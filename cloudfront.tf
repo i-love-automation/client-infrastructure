@@ -116,33 +116,6 @@ resource "aws_cloudfront_distribution" "distribution" {
   tags = local.tags
 }
 
-data "aws_iam_policy_document" "client_s3_policy" {
-  statement {
-    actions   = ["s3:GetObject"]
-    resources = ["${aws_s3_bucket.client.arn}/*"]
-
-    principals {
-      type        = "AWS"
-      identifiers = [aws_cloudfront_origin_access_identity.client.iam_arn]
-    }
-  }
-
-  statement {
-    actions   = ["s3:ListBucket"]
-    resources = [aws_s3_bucket.client.arn]
-
-    principals {
-      type        = "AWS"
-      identifiers = [aws_cloudfront_origin_access_identity.client.iam_arn]
-    }
-  }
-}
-
-resource "aws_s3_bucket_policy" "client" {
-  bucket = aws_s3_bucket.client.id
-  policy = data.aws_iam_policy_document.client_s3_policy.json
-}
-
 resource "aws_cloudfront_function" "remove_api_from_uri" {
   count = var.api_endpoint != "" ? 1 : 0
 
