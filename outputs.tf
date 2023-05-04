@@ -5,11 +5,11 @@ locals {
       sensitive = false
       value     = aws_s3_bucket.client.bucket
     }
-    #"cloudfront_distribution_id" = {
-    #  hcl       = false
-    #  sensitive = false
-    #  value     = aws_cloudfront_distribution.distribution.id
-    #}
+    "cloudfront_distribution_id" = {
+      hcl       = false
+      sensitive = false
+      value     = aws_cloudfront_distribution.distribution.id
+    }
   }
 }
 
