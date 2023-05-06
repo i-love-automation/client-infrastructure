@@ -46,6 +46,10 @@ resource "aws_cloudfront_distribution" "distribution" {
     }
   }
 
+  logging_config {
+    include_cookies = false
+    bucket          = aws_s3_bucket.logs.bucket_domain_name
+  }
 
   default_cache_behavior {
     allowed_methods        = ["GET", "HEAD"]
