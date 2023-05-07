@@ -52,13 +52,13 @@ resource "aws_s3_bucket_policy" "client" {
 }
 
 resource "aws_s3_bucket" "logs" {
-  bucket = "${var.project}-${var.service}"
+  bucket = "${var.project}-${var.service}-logs"
   tags   = local.tags
 }
 
 data "aws_iam_policy_document" "s3_bucket_log_policy" {
   statement {
-    sid    = "GrantCloudFrontReadAccess"
+    sid    = "GrantCloudFrontLogs"
     effect = "Allow"
     actions = [
       "s3:ListBucket",
